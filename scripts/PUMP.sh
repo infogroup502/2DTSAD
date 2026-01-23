@@ -1,0 +1,1 @@
+python main.py --anormly_ratio 0.1  --num_epochs 2  --batch_size 16     --mode train    --dataset PUMP   --data_path PUMP  --input_c 51    --output_c 51  --loss_fuc MSE  --win_size 90  --global_size [15] --local_size [9]
