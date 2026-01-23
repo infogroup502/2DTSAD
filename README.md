@@ -1,0 +1,33 @@
+# Dual-View Time-Series-Imaging-Driven Anomaly Detection for Industrial Control Systems
+This repository provides a PyTorch implementation of 2DTSAD.
+
+## Requirements
+The recommended requirements for 2DTSAD are specified as follows:
+- torch==1.13.0
+- numpy==1.26.4
+- pandas==2.2.2
+- scikit-learn==1.5.1
+- matplotlib==3.9.2
+- statsmodels==0.14.2
+- tsfresh==0.20.3
+- hurst==0.0.5
+- arch==7.0.0
+
+The dependencies can be installed by:
+```bash
+pip install -r requirements.txt
+```
+
+## Data
+The datasets can be obtained and put into datasets/ folder in the following way:
+- Our model supports anomaly detection for multivariate time series datasets.
+- We provide the SKAB dataset. If you want to use your own dataset, please place your datasetfiles in the `/dataset/<dataset>/` folder, following the format `<dataset>_train.npy`, `<dataset>_test.npy`, `<dataset>_test_label.npy`.
+
+
+- ## Usage
+1. Install Python 3.9, PyTorch >= 1.4.0
+2. Download the datasets
+3. To train and evaluate PPLAD on a dataset, run the following command:
+```bash
+python main.py 
+```
