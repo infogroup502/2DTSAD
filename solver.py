@@ -28,7 +28,6 @@ class Solver(object):
     def __init__(self, config):
         self.__dict__.update(Solver.DEFAULTS, **config)
 
-        # get loaders (now NeighborSegLoader returns 'current_value')
         self.train_loader = get_loader_segment(self.index, 'dataset/' + self.data_path,
                                                batch_size=self.batch_size,
                                                win_size=self.win_size,
@@ -77,7 +76,7 @@ class Solver(object):
             self.criterion_keep = nn.MSELoss(reduction='none')
 
     def build_model(self):
-        self.model = twoDTSAD(win_size=self.win_size, d_model=self.d_model,
+        self.model = twoDTSAD(win_size=self.win_size,
                              local_size=self.local_size, global_size=self.global_size,
                              channel=self.input_c)
 
@@ -96,14 +95,6 @@ class Solver(object):
             epoch_time = time.time()
             self.model.train()
             for it, batch in enumerate(self.train_loader):
-                # batch is a dict returned by our NeighborSegLoader
-                # local_window: (B, W, C, L)
-                # global_window:(B, W, C, G)
-                # local_delay:  (B, W, C, L, L)
-                # global_delay: (B, W, C, G, G)
-                # local_gaf/global_gaf same dims
-                # labels: (B, W)
-                # current_value: (B, W, C)  <-- NEW target
                 self.optimizer.zero_grad()
                 iter_count += 1
 
@@ -118,7 +109,7 @@ class Solver(object):
                 if labels is not None:
                     labels = labels.to(self.device)
 
-                # NEW: get true current values (ground truth) for centers in this batch
+                # get true current values (ground truth) for centers in this batch
                 current_value = batch.get("current_value", None)
                 if current_value is not None:
                     current_value = current_value.float().to(self.device)  # (B, W, C)
@@ -132,7 +123,6 @@ class Solver(object):
                 local_gaf_flat = local_gaf.reshape(B * W, C, L1, L1)
                 global_gaf_flat = global_gaf.reshape(B * W, C, G1, G1)
 
-                # call model: pass B (batch size), window length W as the 'sequence length' L parameter, and M = C
                 xlocal, xglobal, pred_delay_local, pred_delay_global, pred_gaf_local, pred_gaf_global = \
                     self.model(B, W, C, local_delay_flat, global_delay_flat, local_gaf_flat, global_gaf_flat)
 
@@ -143,7 +133,6 @@ class Solver(object):
                 global_loss = self.criterion(xglobal, x_tgt)
                 lo_gl_loss = self.criterion(xlocal, xglobal)
 
-                # for predicted graphs (delay/gaf) predictions are of shape (B*W, C, L, L) etc; compare to corresponding inputs:
                 pred_delay_local_loss = self.criterion(pred_delay_local, local_delay_flat)
                 pred_delay_global_loss = self.criterion(pred_delay_global, global_delay_flat)
                 pred_gaf_local_loss = self.criterion(pred_gaf_local, local_gaf_flat)
@@ -197,8 +186,7 @@ class Solver(object):
             lo_gl_loss = self.criterion_keep(xlocal, xglobal)
             lo_gl_loss, _ = torch.max(lo_gl_loss, dim=-1)
 
-            if self.Ablation == 'Time_Only':
-                loss_metric = lo_gl_loss
+            loss_metric = lo_gl_loss
 
             metric = torch.softmax(loss_metric, dim=-1)
             attens_energy.append(metric.detach().cpu().numpy())
@@ -232,8 +220,7 @@ class Solver(object):
             topk_value, _ = torch.topk(lo_gl_loss, k=self.topk, dim=-1)
             lo_gl_loss = torch.mean(topk_value, dim=-1)
 
-            if self.Ablation == 'Time_Only':
-                loss_metric = lo_gl_loss
+            loss_metric = lo_gl_loss
 
             metric = torch.softmax(loss_metric, dim=-1)
             attens_energy.append(metric.detach().cpu().numpy())
@@ -250,9 +237,6 @@ class Solver(object):
 
         test_labels_list = []
         attens_energy = []
-
-        mid_iter = 2
-        saved_flag = False
 
         for i, batch in enumerate(self.thre_loader):
             local_window = batch["local_window"].float().to(self.device)
@@ -300,7 +284,6 @@ class Solver(object):
         for k, v in scores_simple.items():
             print(f"{k:20}: {v:.4f}")
 
-        # post-process contiguous anomaly labeling as original
         anomaly_state = False
         for i in range(len(gt)):
             if gt[i] == 1 and pred[i] == 1 and not anomaly_state:

@@ -64,9 +64,9 @@ if __name__ == '__main__':
     # Alternative
     parser.add_argument('--win_size', type=int, default=90)
     parser.add_argument('--topk', type=int, default=1)
-    parser.add_argument('--local_size', type=list_type, default=[7])
-    parser.add_argument('--global_size', type=list_type, default=[9])
-    parser.add_argument('--anormly_ratio', type=float, default=0.2)
+    parser.add_argument('--local_size', type=list_type, default=[27])
+    parser.add_argument('--global_size', type=list_type, default=[45])
+    parser.add_argument('--anormly_ratio', type=float, default=0.6)
     parser.add_argument('--batch_size', type=int, default=16)
     parser.add_argument('--num_epochs', type=int, default=2)
 
@@ -77,11 +77,11 @@ if __name__ == '__main__':
     parser.add_argument('--devices', type=str, default='0,1,2,3',help='device ids of multile gpus')
     parser.add_argument('--loss_fuc', type=str, default='MSE')
     parser.add_argument('--index', type=int, default=137)
-    parser.add_argument('--input_c', type=int, default=51)
-    parser.add_argument('--output_c', type=int, default=51)
-    parser.add_argument('--dataset', type=str, default='PUMP')
+    parser.add_argument('--input_c', type=int, default=8)
+    parser.add_argument('--output_c', type=int, default=8)
+    parser.add_argument('--dataset', type=str, default='SKAB')
     parser.add_argument('--mode', type=str, default='train', choices=['train', 'test'])
-    parser.add_argument('--data_path', type=str, default='PUMP')
+    parser.add_argument('--data_path', type=str, default='SKAB')
     parser.add_argument('--model_save_path', type=str, default='checkpoints')
 
     config = parser.parse_args()

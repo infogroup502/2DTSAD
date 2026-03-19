@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-# ======= MLP 定义 =======
+# ======= MLP  =======
 class MLP(nn.Module):
     def __init__(self, input_size, hidden_size, output_size):
         super(MLP, self).__init__()
@@ -16,9 +16,9 @@ class MLP(nn.Module):
         return x
 
 
-# ======= 主模型 =======
+# ======= main =======
 class twoDTSAD(nn.Module):
-    def __init__(self, win_size, d_model=256,
+    def __init__(self, win_size, d_model=128,
                  local_size=[3, 5, 7], global_size=[3, 5, 7],
                  channel=55, dropout=0.05):
 
@@ -93,9 +93,7 @@ class twoDTSAD(nn.Module):
         fe2 = conv_layer_T(x)
         return fe1, fe2
 
-    # --------------------
-    # forward
-    # --------------------
+
     def forward(self, B, L, M, local_delay, global_delay, local_gaf, global_gaf):
 
         # ---- delay ----
