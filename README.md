@@ -27,7 +27,7 @@ The datasets can be obtained and put into datasets/ folder in the following way:
 - ## Usage
 1. Install Python 3.9, PyTorch >= 1.4.0
 2. Download the datasets
-3. To train and evaluate PPLAD on a dataset, run the following command:
+3. To train and evaluate 2DTSAD on a dataset, run the following command:
 ```bash
 python main.py 
 ```
